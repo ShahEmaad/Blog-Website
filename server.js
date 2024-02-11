@@ -1,32 +1,38 @@
-const express = require('express')
-const morgan = require('morgan')
-const colors = require('colors')
-const cors = require('cors')
+const express = require("express");
+const cors = require("cors");
+const morgan = require("morgan");
+const colors = require("colors");
+const dotenv = require("dotenv");
+const connectDB = require("./config/db");
 
-// Env
-const dotenv = require('dotenv')
-dotenv.config()
+//env config
+dotenv.config();
 
-// Rest Object
-const app = express()
+//router import
+const userRoutes = require("./routes/userRoutes");
+const blogRoutes = require("./routes/blogRoutes");
 
-// Middlewares
-app.use(cors())
-app.use(morgan('dev'))
-app.use(express.json())
+//mongodb connection
+connectDB();
 
-// Routes
-app.get('/',(req,res)=>{
-    res.status(200).send({
-        "message":"Node Server"
-    })
-})
+//rest objecct
+const app = express();
 
-// Env Variables
-const PORT = process.env.PORT
-const DEV_MODE = process.env.DEV_MODE
+//middelwares
+app.use(cors());
+app.use(express.json());
+app.use(morgan("dev"));
 
-// Listen
-app.listen(PORT,()=>{
-    console.log(`Server mode is ${DEV_MODE} listening on port ${PORT}`.bgGreen.yellow)
-})
+//routes
+app.use("/api/v1/user", userRoutes);
+app.use("/api/v1/blog", blogRoutes);
+
+// Port
+const PORT = process.env.PORT || 8080;
+//listen
+app.listen(PORT, () => {
+  console.log(
+    `Server Running on ${process.env.DEV_MODE} mode port no ${PORT}`.bgCyan
+      .white
+  );
+});
